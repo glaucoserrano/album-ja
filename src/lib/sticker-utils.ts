@@ -28,14 +28,21 @@ export function buildStickerMap(
         const posInRange = n - range.from + 1;
         const totalInRange = range.to - range.from + 1;
         
-        const displayName = range.namePrefix
+        let displayName = range.namePrefix
           ? (totalInRange > 1 ? `${range.namePrefix} ${posInRange}` : range.namePrefix)
           : numStr;
 
+        let stickerCode = code;
+        
+        // Special case for 00
+        if (range.prefix === "FWC" && n === 0) {
+          displayName = "00";
+          stickerCode = "00";
+        }
 
         map.set(id, {
           id,
-          code,
+          code: stickerCode,
           displayName,
           categoryId: category.id,
           isSpecial: category.id.startsWith("especiais") || range.prefix === "FWC",
@@ -88,9 +95,14 @@ export function computeStats(
  * Tolerant to: bra01, BRA 01, BRA-01, Bra 1
  */
 export function normalizeStickerInput(raw: string): string | null {
+  const normalized = raw.toUpperCase().trim();
+  
+  // Special case for 00
+  if (normalized === "00") return "FWC-00";
+
   // Regex to capture [PREFIX][optional separators][NUMBER]
   // Supports 2-4 letters followed by digits
-  const match = raw.toUpperCase().match(/^([A-Z]{2,4})[-\s]*(\d+)$/);
+  const match = normalized.match(/^([A-Z]{2,4})[-\s]*(\d+)$/);
   
   if (!match) return null;
   
@@ -99,6 +111,7 @@ export function normalizeStickerInput(raw: string): string | null {
   
   return `${prefix}-${formatNumber(num)}`;
 }
+
 
 /** Parse a free-text input of sticker codes */
 export function parseRegistroInput(input: string): string[] {
@@ -116,20 +129,26 @@ export function parseRegistroInput(input: string): string[] {
   
   // Re-joining and using a global regex is often more reliable for mixed input
   const normalizedText = input.toUpperCase().replace(/-/g, " ");
-  const regex = /([A-Z]{2,4})\s*(\d+)/g;
   
+  // Find standard [PREFIX][NUMBER]
+  const regex = /([A-Z]{2,4})\s*(\d+)/g;
   let match;
   while ((match = regex.exec(normalizedText)) !== null) {
     const prefix = match[1];
     const num = parseInt(match[2], 10);
     stickersFound.push(`${prefix}-${formatNumber(num)}`);
   }
-  
-  // Fallback for single numbers if the user just pasted digits (though we expect prefix now)
-  // For now, we strictly enforce prefix as per user request
+
+  // Find standalone "00"
+  const standaloneRegex = /(?:^|[\s,;|\n\t])(00)(?:$|[\s,;|\n\t])/g;
+  let match00;
+  while ((match00 = standaloneRegex.exec(normalizedText)) !== null) {
+    stickersFound.push("FWC-00");
+  }
   
   return stickersFound;
 }
+
 
 /** Process a list of sticker IDs, return result + updated state */
 export function processRegistroRapido(

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+
 import { PieChart } from "lucide-react";
 import { useAlbum } from "@/hooks/useAlbum";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -25,13 +26,21 @@ function StatRow({ label, value, color = "var(--text-primary)" }: StatRowProps) 
 
 export default function EstatisticasPage() {
   const { stats, collection, stickerMap, stickerState } = useAlbum();
+  const [mounted, setMounted] = useState(false);
 
-  const pct = Math.min(100, Math.max(0, stats.percentualCompleto));
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const shareText = useMemo(
     () => generateShareText(collection.name, stickerState, stickerMap),
     [collection.name, stickerState, stickerMap]
   );
+
+  if (!mounted) return null;
+
+  const pct = Math.min(100, Math.max(0, stats.percentualCompleto));
+
 
   return (
     <>

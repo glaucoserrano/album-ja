@@ -72,11 +72,11 @@ export function RegistroRapidoModal({
           <div className="space-y-4">
             <textarea
               value={input}
-              onChange={(e) => onInputChange(e.target.value)}
-              placeholder={"Cole aqui seus códigos...\nEx: BRA 01 BRA 12 FWC 01 FWC 10"}
+              onChange={(e) => onInputChange(e.target.value.toUpperCase())}
+              placeholder={"Cole aqui seus códigos...\nEx: 00, BRA 01, FWC 01"}
               rows={6}
               autoFocus
-              className="w-full rounded-2xl p-5 text-sm font-bold bg-slate-50 border border-slate-100 outline-none transition-all duration-300 placeholder:text-slate-300 focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-200 text-slate-700 resize-none"
+              className="w-full rounded-2xl p-5 text-sm font-bold bg-slate-50 border border-slate-100 outline-none transition-all duration-300 placeholder:text-slate-300 focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-200 text-slate-700 resize-none uppercase"
             />
 
             <button
@@ -89,8 +89,9 @@ export function RegistroRapidoModal({
             </button>
             
             <p className="text-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-              Suporta: BRA 01, bra1, FWC-01, etc.
+              Suporta: 00, BRA 01, bra1, FWC-01, etc.
             </p>
+
           </div>
         )}
 

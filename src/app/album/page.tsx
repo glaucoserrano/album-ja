@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+
 import { Zap, BookOpen, Search as SearchIcon } from "lucide-react";
 import { useAlbum } from "@/hooks/useAlbum";
 import { useRegistroRapido } from "@/hooks/useRegistroRapido";
@@ -27,6 +28,12 @@ export default function AlbumPage() {
 
   const [filter, setFilter] = useState<AlbumFilter>("todas");
   const [search, setSearch] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const rr = useRegistroRapido(registrarRapido);
 
   const handleFilterChange = useCallback((f: AlbumFilter) => {
@@ -68,6 +75,9 @@ export default function AlbumPage() {
     () => visibleSections.reduce((acc, { stickers }) => acc + stickers.length, 0),
     [visibleSections]
   );
+
+  if (!mounted) return null;
+
 
   const albumIsTotallyEmpty = stats.figurinhasUnicasObtidas === 0;
 

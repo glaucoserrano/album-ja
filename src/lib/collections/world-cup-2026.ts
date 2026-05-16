@@ -49,7 +49,8 @@ export const worldCup2026: CollectionDefinition = {
       emoji: "🏆",
       color: "#0057D9",
       ranges: [
-        { prefix: "FWC", from: 1, to: 9, namePrefix: "Introdução" },
+        { prefix: "FWC", from: 0, to: 9, namePrefix: "Introdução" },
+
         { prefix: "FWC", from: 10, to: 20, namePrefix: "FIFA Museum" },
       ],
     },

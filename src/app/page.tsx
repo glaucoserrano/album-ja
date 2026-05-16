@@ -1,7 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
-import { CheckCircle2, AlertCircle, RefreshCw, BookOpen, ChevronRight } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+
+import { CheckCircle2, AlertCircle, RefreshCw, Trophy, BookOpen, ChevronRight } from "lucide-react";
+
+
 import { useAlbum } from "@/hooks/useAlbum";
 import { useRegistroRapido } from "@/hooks/useRegistroRapido";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -16,6 +19,11 @@ import Link from "next/link";
 
 export default function DashboardPage() {
   const { stats, collection, registrarRapido } = useAlbum();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const rr = useRegistroRapido(registrarRapido);
 
@@ -26,15 +34,19 @@ export default function DashboardPage() {
     return "Boa noite";
   }, []);
 
+  if (!mounted) return null;
+
+
   return (
     <>
       <PageHeader
-        title={`${greeting}, Colecionador! 🌍`}
+        title={`${greeting}, Colecionador! 🏆`}
         subtitle={APP_NAME}
         description="Sua jornada rumo ao álbum completo"
-        icon={BookOpen}
+        icon={Trophy}
         gradient
       />
+
 
       <div className="px-6 space-y-6 pb-6 animate-slide-up">
         {/* Main Progress Section */}
@@ -70,12 +82,16 @@ export default function DashboardPage() {
               Icon={AlertCircle}
               color="red"
             />
-            <SummaryCard
-              label="Repetidas"
-              value={stats.totalRepetidas}
-              Icon={RefreshCw}
-              color="orange"
-            />
+            <Link href="/repetidas" className="block active:scale-95 transition-transform">
+              <SummaryCard
+                label="Repetidas"
+                value={stats.totalRepetidas}
+                Icon={RefreshCw}
+                color="orange"
+                className="h-full"
+              />
+            </Link>
+
             <SummaryCard
               label="Total"
               value={stats.totalObtidas}
