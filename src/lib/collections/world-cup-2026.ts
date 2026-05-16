@@ -150,17 +150,10 @@ function getTeamColor(code: string): string {
 
 /** Named overrides for key stickers */
 export const namedStickers: Record<string, string> = {
-  "FWC-01": "Capa Oficial — Panini",
-  "FWC-02": "Troféu FIFA World Cup",
-  "FWC-03": "Logo Oficial — 2026",
-  "FWC-04": "Mascote Oficial",
-  "FWC-05": "Bola da Copa",
-  "BRA-01": "Escudo do Brasil",
-  "BRA-02": "Foto do time do Brasil",
-  "BRA-12": "Vinícius Jr.",
-  "ARG-01": "Escudo da Argentina",
-  "ARG-02": "Foto do time da Argentina",
-  "ARG-11": "Lionel Messi",
-
-
+  "FWC-00": "Capa Oficial",
+  "FWC-01": "Troféu FIFA World Cup",
+  "FWC-02": "Logo Oficial — 2026",
+  "FWC-03": "Mascote Oficial",
+  "FWC-04": "Bola da Copa",
 };
+

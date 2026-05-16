@@ -97,7 +97,8 @@ export default function AlbumPage() {
         <SearchBar
           value={search}
           onChange={setSearch}
-          placeholder="Ex: BRA 01, FWC 02, Messi..."
+          placeholder="Ex: BRA 01, FWC 02, Escudo..."
+
         />
 
         {albumIsTotallyEmpty && !search ? (
