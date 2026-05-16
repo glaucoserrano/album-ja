@@ -93,12 +93,16 @@ export default function EstatisticasPage() {
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0">
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">
-                          {cat.id.startsWith("especiais") ? "FWC" : cat.id.toUpperCase()}
+                          {cat.id === "especiais-coca-cola" ? "CC" : cat.id.startsWith("especiais") ? "FWC" : cat.id.toUpperCase()}
                         </span>
                       </div>
                       <span className="text-sm font-black text-slate-800">
                         {cat.name}
                       </span>
+
+
+
+
                     </div>
                     <span className="text-xs font-black tabular-nums text-slate-400">
                       {catOwned} / {catStickers.length}

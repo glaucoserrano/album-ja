@@ -26,9 +26,12 @@ export function buildStickerMap(
         const code = `${range.prefix} ${numStr}`;
         
         const posInRange = n - range.from + 1;
+        const totalInRange = range.to - range.from + 1;
+        
         const displayName = range.namePrefix
-          ? `${range.namePrefix} ${posInRange}`
-          : `Figurinha ${code}`;
+          ? (totalInRange > 1 ? `${range.namePrefix} ${posInRange}` : range.namePrefix)
+          : numStr;
+
 
         map.set(id, {
           id,

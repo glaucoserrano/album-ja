@@ -19,8 +19,10 @@ interface CategorySectionProps {
 }
 
 export const CategorySection = memo(function CategorySection({
+  id,
   name,
   emoji,
+
   color = "#0057D9",
   stickers,
   stickerState,
@@ -51,16 +53,23 @@ export const CategorySection = memo(function CategorySection({
         )}
       >
         <div 
-          className="w-10 h-10 rounded-[14px] flex items-center justify-center text-lg border border-slate-50"
-          style={{ backgroundColor: `${color}10` }}
+          className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0"
         >
-          {emoji || "📁"}
+          <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">
+            {id === "especiais-coca-cola" ? "CC" : id.startsWith("especiais") ? "FWC" : id.toUpperCase()}
+          </span>
         </div>
         
         <div className="flex-1 text-left">
           <span className="block text-sm font-black text-slate-800 tracking-tight">
             {name}
           </span>
+
+
+
+
+
+
           <div className="flex items-center gap-2 mt-0.5">
             <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
               <div 
