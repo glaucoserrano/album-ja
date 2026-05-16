@@ -1,26 +1,155 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
+/* ─── Design Tokens (V6 - PREMIUM MOBILE PRODUCT) ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core Colors */
+  --color-white: #ffffff;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-subtle: #f8fafc;
+  
+  --color-primary: #0057d9;     /* Deep Royal Blue */
+  --color-primary-light: #e0e7ff;
+  
+  --color-secondary: #00c853;   /* Success Green */
+  --color-secondary-light: #dcfce7;
+  
+  --color-danger: #ff1744;      /* Vibrant Red */
+  --color-danger-light: #fee2e2;
+  
+  --color-warning: #ff9100;     /* Warning Orange */
+  --color-warning-light: #ffedd5;
+  
+  --color-gold: #ffd600;        /* Gold */
+  
+  /* Text */
+  --text-main: #0f172a;         /* Slate 900 */
+  --text-dim: #64748b;          /* Slate 500 */
+  --text-muted: #94a3b8;        /* Slate 400 */
+  
+  /* Borders & Shadows */
+  --border-light: #f1f5f9;
+  --border-medium: #e2e8f0;
+  
+  /* Premium Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  
+  /* Radius */
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--text-main);
+  --font-sans: "Inter", system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Global Styles ─── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--text-main);
+  font-family: "Inter", system-ui, sans-serif;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ─── Premium Components ─── */
+.premium-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-card:active {
+  transform: scale(0.98);
+}
+
+.premium-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-button:active {
+  transform: scale(0.95);
+}
+
+/* ─── Progress Bar ─── */
+.progress-track-premium {
+  background-color: var(--border-light);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: var(--shadow-inner);
+}
+
+.progress-fill-premium {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Animations ─── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* ─── Custom Gradients ─── */
+.gradient-primary-vibrant {
+  background: linear-gradient(135deg, var(--color-primary), #4f46e5);
+}
+
+.gradient-fab {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-danger));
+}
+
+.gradient-text-premium {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Status Badges ─── */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-width: 1px;
+}
+
+.status-badge-success { background-color: var(--color-secondary-light); color: var(--color-secondary); border-color: #bbf7d0; }
+.status-badge-danger  { background-color: var(--color-danger-light); color: var(--color-danger); border-color: #fecaca; }
+.status-badge-warning { background-color: var(--color-warning-light); color: var(--color-warning); border-color: #fed7aa; }
+.status-badge-info    { background-color: var(--color-primary-light); color: var(--color-primary); border-color: #c7d2fe; }
