@@ -67,6 +67,20 @@ export interface RegistroRapidoResult {
   adicionadas: number;   // successfully added stickers
   jaRepetidas: number;   // stickers that were already in the album
   invalidas: string[];   // raw strings that couldn't be parsed or don't exist
+  repetidasDetalhes?: string[]; // IDs das figurinhas que foram duplicadas no lote
+  validas?: string[]; // IDs das figurinhas válidas adicionadas no lote
+}
+
+// ─── Histórico de Lançamentos ──────────────────────────────────────────────────
+
+export interface HistoryEntry {
+  id: string;            // ID único do registro no histórico
+  timestamp: string;     // Data/hora em formato ISO
+  stickerId: string;     // ID interno da figurinha (ex: BRA-01)
+  stickerCode: string;   // Código exibido (ex: BRA 01)
+  stickerName: string;   // Nome da figurinha
+  quantityChange: number; // Variação na quantidade (+1, -1, etc.)
+  actionType: "manual" | "batch"; // Método de lançamento
 }
 
 // ─── Filter for album view ────────────────────────────────────────────────────

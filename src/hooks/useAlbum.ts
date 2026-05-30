@@ -17,9 +17,11 @@ import type {
   Sticker,
   RegistroRapidoResult,
   AlbumFilter,
+  HistoryEntry,
 } from "@/types/album";
 
 const STORAGE_KEY = "stickers-world-cup-2026";
+const HISTORY_STORAGE_KEY = "history-world-cup-2026";
 
 // Build sticker map once (stable reference)
 const stickerMap = buildStickerMap(worldCup2026);
@@ -40,6 +42,11 @@ export function useAlbum() {
     EMPTY_STATE
   );
 
+  const [history, setHistory] = useLocalStorage<HistoryEntry[]>(
+    HISTORY_STORAGE_KEY,
+    []
+  );
+
   // ── Stats (memoized) ───────────────────────────────────────────────────────
   const stats: AlbumStats = useMemo(
     () => computeStats(stickerState, worldCup2026.totalStickers, stickerMap),
@@ -53,26 +60,64 @@ export function useAlbum() {
         ...prev,
         [id]: (prev[id] ?? 0) + 1,
       }));
+
+      const sticker = stickerMap.get(id);
+      if (sticker) {
+        setHistory((prev) => [
+          {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date().toISOString(),
+            stickerId: id,
+            stickerCode: sticker.code,
+            stickerName: sticker.displayName,
+            quantityChange: 1,
+            actionType: "manual",
+          },
+          ...prev,
+        ]);
+      }
     },
-    [setStickerState]
+    [setStickerState, setHistory]
   );
 
   const decrement = useCallback(
     (id: string) => {
+      let decremented = false;
       setStickerState((prev) => {
         const current = prev[id] ?? 0;
         if (current <= 0) return prev;
+        decremented = true;
         const next = { ...prev, [id]: current - 1 };
         if (next[id] === 0) delete next[id];
         return next;
       });
+
+      if (decremented) {
+        const sticker = stickerMap.get(id);
+        if (sticker) {
+          setHistory((prev) => [
+            {
+              id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              timestamp: new Date().toISOString(),
+              stickerId: id,
+              stickerCode: sticker.code,
+              stickerName: sticker.displayName,
+              quantityChange: -1,
+              actionType: "manual",
+            },
+            ...prev,
+          ]);
+        }
+      }
     },
-    [setStickerState]
+    [setStickerState, setHistory]
   );
 
   const setQuantity = useCallback(
     (id: string, qty: number) => {
+      let prevQty = 0;
       setStickerState((prev) => {
+        prevQty = prev[id] ?? 0;
         if (qty <= 0) {
           const next = { ...prev };
           delete next[id];
@@ -80,8 +125,27 @@ export function useAlbum() {
         }
         return { ...prev, [id]: qty };
       });
+
+      const change = qty - prevQty;
+      if (change !== 0) {
+        const sticker = stickerMap.get(id);
+        if (sticker) {
+          setHistory((prev) => [
+            {
+              id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              timestamp: new Date().toISOString(),
+              stickerId: id,
+              stickerCode: sticker.code,
+              stickerName: sticker.displayName,
+              quantityChange: change,
+              actionType: "manual",
+            },
+            ...prev,
+          ]);
+        }
+      }
     },
-    [setStickerState]
+    [setStickerState, setHistory]
   );
 
   // ── Filtered lists (memoized) ──────────────────────────────────────────────
@@ -111,9 +175,61 @@ export function useAlbum() {
         stickerMap
       );
       setStickerState(newState);
+
+      // Log to history
+      if (result.validas && result.validas.length > 0) {
+        const newEntries: HistoryEntry[] = [];
+        const now = new Date().toISOString();
+        
+        // Count how many of each sticker were added in this batch
+        const counts: Record<string, number> = {};
+        for (const id of result.validas) {
+          counts[id] = (counts[id] ?? 0) + 1;
+        }
+
+        for (const [id, count] of Object.entries(counts)) {
+          const sticker = stickerMap.get(id);
+          if (sticker) {
+            newEntries.push({
+              id: `${Date.now()}-${id}-${Math.random().toString(36).substr(2, 9)}`,
+              timestamp: now,
+              stickerId: id,
+              stickerCode: sticker.code,
+              stickerName: sticker.displayName,
+              quantityChange: count,
+              actionType: "batch",
+            });
+          }
+        }
+
+        setHistory((prev) => [...newEntries, ...prev]);
+      }
+
       return result;
     },
-    [stickerState, setStickerState]
+    [stickerState, setStickerState, setHistory]
+  );
+
+  // ── Reverter Registro do Histórico ──────────────────────────────────────────
+  const revertHistoryEntry = useCallback(
+    (entryId: string) => {
+      setHistory((prevHistory) => {
+        const entry = prevHistory.find((e) => e.id === entryId);
+        if (!entry) return prevHistory;
+
+        setStickerState((prevStickers) => {
+          const currentQty = prevStickers[entry.stickerId] ?? 0;
+          // Subtrai o valor alterado (já que foi adicionado no passado)
+          const nextQty = Math.max(0, currentQty - entry.quantityChange);
+          const next = { ...prevStickers, [entry.stickerId]: nextQty };
+          if (next[entry.stickerId] === 0) delete next[entry.stickerId];
+          return next;
+        });
+
+        return prevHistory.filter((e) => e.id !== entryId);
+      });
+    },
+    [setStickerState, setHistory]
   );
 
   // ── Backup ─────────────────────────────────────────────────────────────────
@@ -125,11 +241,12 @@ export function useAlbum() {
         collectionId: worldCup2026.id,
         exportedAt: new Date().toISOString(),
         stickers: stickerState,
+        history: history,
       },
       null,
       2
     );
-  }, [stickerState]);
+  }, [stickerState, history]);
 
   const importBackup = useCallback(
     (jsonStr: string): boolean => {
@@ -138,6 +255,11 @@ export function useAlbum() {
         // We only accept valid sticker objects
         if (parsed.stickers && typeof parsed.stickers === "object") {
           setStickerState(parsed.stickers as StickerState);
+          if (parsed.history && Array.isArray(parsed.history)) {
+            setHistory(parsed.history);
+          } else {
+            setHistory([]);
+          }
           return true;
         }
         return false;
@@ -145,13 +267,14 @@ export function useAlbum() {
         return false;
       }
     },
-    [setStickerState]
+    [setStickerState, setHistory]
   );
 
   const clearAll = useCallback(() => {
     setStickerState(EMPTY_STATE);
+    setHistory([]);
     storage.clearAll();
-  }, [setStickerState]);
+  }, [setStickerState, setHistory]);
 
   // ── Getters ────────────────────────────────────────────────────────────────
   const getQuantity = useCallback(
@@ -165,6 +288,7 @@ export function useAlbum() {
     stickerMap,
     stickerState,
     stats,
+    history,
     // Actions
     increment,
     decrement,
@@ -172,6 +296,7 @@ export function useAlbum() {
     getQuantity,
     getFilteredStickers,
     registrarRapido,
+    revertHistoryEntry,
     // Backup
     exportBackup,
     importBackup,

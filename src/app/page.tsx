@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 
-import { CheckCircle2, AlertCircle, RefreshCw, Trophy, BookOpen, ChevronRight } from "lucide-react";
+import { CheckCircle2, AlertCircle, RefreshCw, Trophy, BookOpen, ChevronRight, History } from "lucide-react";
 
 
 import { useAlbum } from "@/hooks/useAlbum";
@@ -45,6 +45,15 @@ export default function DashboardPage() {
         description="Sua jornada rumo ao álbum completo"
         icon={Trophy}
         gradient
+        actions={
+          <Link
+            href="/historico"
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-50 border border-slate-100 text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-all hover:bg-slate-100 active:scale-90"
+            title="Histórico de Lançamentos"
+          >
+            <History size={18} strokeWidth={2.5} />
+          </Link>
+        }
       />
 
 

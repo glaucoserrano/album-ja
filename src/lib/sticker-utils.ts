@@ -160,6 +160,8 @@ export function processRegistroRapido(
   let adicionadas = 0;
   let jaRepetidas = 0;
   const invalidas: string[] = [];
+  const repetidasDetalhes: string[] = [];
+  const validas: string[] = [];
 
   for (const id of ids) {
     if (!stickerMap.has(id)) {
@@ -167,9 +169,13 @@ export function processRegistroRapido(
       continue;
     }
     const current = newState[id] ?? 0;
-    if (current >= 1) jaRepetidas++;
+    if (current >= 1) {
+      jaRepetidas++;
+      repetidasDetalhes.push(id);
+    }
     newState[id] = current + 1;
     adicionadas++;
+    validas.push(id);
   }
 
   return {
@@ -179,6 +185,8 @@ export function processRegistroRapido(
       adicionadas,
       jaRepetidas,
       invalidas,
+      repetidasDetalhes,
+      validas,
     },
   };
 }
